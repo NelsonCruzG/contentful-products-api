@@ -45,3 +45,12 @@ export type ResponseWrapper = {
   limit: number;
   items: ItemWrapper[];
 };
+
+type ProductExtraFields = {
+  extrernalId: string;
+  externalCreatedAt: string;
+  externalUpdatedAt: string;
+  isVisible: boolean;
+};
+
+export type ConvertedProduct = ProductFields & ProductExtraFields;

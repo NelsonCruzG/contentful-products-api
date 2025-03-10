@@ -55,7 +55,6 @@ export class TasksService {
 
   async syncProducts() {
     const response = await this.getPaginatedProducts();
-    console.log({ total: response.length });
   }
 
   // EVERY_30_SECONDS - EVERY_5_SECONDS - EVERY_HOUR
