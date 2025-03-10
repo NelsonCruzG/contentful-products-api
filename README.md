@@ -100,6 +100,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## OpenAPI (Swagger) Documentation
+
+Once the app is running, the docs are available at: {app_base_url}/api
+
 ## License
 
 Private
