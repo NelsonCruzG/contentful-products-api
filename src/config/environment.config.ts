@@ -17,6 +17,10 @@ export const environmentSchema = Joi.object({
     'string.required':
       'CONTENTFUL_CONTENT_TYPE env variable is required but not set',
   }),
+  CONTENTFUL_BASE_URL: Joi.string().required().messages({
+    'string.required':
+      'CONTENTFUL_BASE_URL env variable is required but not set',
+  }),
   POSTGRES_DB_HOST: Joi.string().required().messages({
     'string.required': 'POSTGRES_DB_HOST env variable is required but not set',
   }),
