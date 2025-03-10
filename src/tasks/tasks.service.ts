@@ -3,19 +3,24 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
 import { ItemWrapper, ResponseWrapper } from 'src/products/products.types';
+import { StatusEnum } from 'src/synchronizations/entities/synchronization.entity';
+import { SynchronizationsService } from 'src/synchronizations/synchronizations.service';
 
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
   private readonly endpoint = `${process.env.CONTENTFUL_BASE_URL}/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIRONMENT}/entries`;
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly synchronizationsService: SynchronizationsService,
+  ) {}
 
-  async getPaginatedProducts(): Promise<ItemWrapper[]> {
-    this.logger.debug('Starting Fetching products');
+  async getPaginatedProducts(lastDate?: Date): Promise<ItemWrapper[]> {
+    this.logger.debug('Start Fetching products');
     let continueFetching = true;
     const totalItems: ItemWrapper[] = [];
-    let limit = 1000;
+    let limit = 1_000;
     let skip = 0;
 
     while (continueFetching) {
@@ -28,6 +33,11 @@ export class TasksService {
         },
       };
 
+      // If lastDate is set, add it to the params to fetch only updated products
+      if (lastDate) {
+        options.params['sys.updatedAt[gte]'] = lastDate.toISOString();
+      }
+
       const observable = this.httpService.get<ResponseWrapper>(
         this.endpoint,
         options,
@@ -37,16 +47,18 @@ export class TasksService {
         this.logger.debug('Fetching products');
         const response = await firstValueFrom(observable);
         totalItems.push(...response.data.items);
-        skip += limit;
         this.logger.debug(`Skipped: ${skip}`);
         this.logger.debug(`Items fetched: ${response.data.items.length}`);
 
-        if (response.data.total <= response.data.skip + response.data.limit) {
+        if (response.data.total <= skip) {
           continueFetching = false;
         }
+        skip += limit;
       } catch (error) {
         this.logger.error(`Error fetching products: ${error}`);
+      } finally {
         continueFetching = false;
+        this.logger.debug('Finished fetching products');
       }
     }
 
@@ -54,11 +66,25 @@ export class TasksService {
   }
 
   async syncProducts() {
-    const response = await this.getPaginatedProducts();
+    const startDate = new Date();
+    const lastSync = await this.synchronizationsService.findLast();
+    const response = await this.getPaginatedProducts(lastSync?.endDate);
+
+    const synchronization = await this.synchronizationsService.create({
+      startDate,
+      endDate: new Date(),
+      updatedRecords: response.length,
+      createdRecords: 0,
+      removedRecords: 0,
+      status: StatusEnum.SUCCESS,
+    });
+
+    this.logger.debug('Sync finished');
+    this.logger.debug({ synchronization });
   }
 
-  // EVERY_30_SECONDS - EVERY_5_SECONDS - EVERY_HOUR
-  @Cron(CronExpression.EVERY_5_SECONDS, {
+  // Testing values: EVERY_30_SECONDS - EVERY_5_SECONDS - EVERY_HOUR
+  @Cron(CronExpression.EVERY_30_SECONDS, {
     name: 'hourlySyncTask',
     timeZone: 'America/Los_Angeles',
   })

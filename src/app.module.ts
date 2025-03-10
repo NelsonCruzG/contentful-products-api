@@ -8,6 +8,7 @@ import { databaseOptions } from './config/database.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { ProductsModule } from './products/products.module';
+import { SynchronizationsModule } from './synchronizations/synchronizations.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductsModule } from './products/products.module';
     ScheduleModule.forRoot(),
     TasksModule,
     ProductsModule,
+    SynchronizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
