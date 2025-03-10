@@ -1,30 +1,21 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Contentful products API
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API that syncronizes data from Contentful products for users to manage and admins to see metrics
+
+## Core
+
+Tecnologies in this project:
+
+- NodeJS: 22.14.0
+- NestJS: 10.0.0
+- Docker: 4.36.0
+- TypeScript: 5.1.3
+- Swagger: 8.1.1
+- TypeORM: 0.3.21
+- PostgreSQL: 15
+- pg-admin: 9.0.0
 
 ## Installation
 
@@ -32,7 +23,32 @@
 $ npm install
 ```
 
-## Running the app
+## Setup and Run the app
+
+The app is dockerized, therefore it can be run with docker and via docker compose. There are also environment variables that must be set previously in order to run the app.
+Volumes are used to keep the information you use save on the database every time you kill the container.
+
+### Prerequisites
+
+1. Create a `.env` file and fill following the `.env.example` variables structure
+2. There are two docker-compose files _docker-compose.local.yml_ and _docker-compose.yml_:
+   - the **local** one includes pg-admin, and as its names suggests, it is meant to be used in local environments to setup and running the app with minimal effort.
+   - The other one is more oriented for a production-like environment where you make use of the self contained app and postgres to serve clients.
+3. Make sure you have the local **Core** dependencies in your computer or at least compatible versions.
+
+### Run the app with local composer
+
+First run:
+
+```bash
+# Normal logging display
+$ docker compose -f docker-compose.local.yml up
+
+# Or detached mode
+$ docker compose -f docker-compose.local.yml up -d
+```
+
+Then you can run the app in a separate or same terminal:
 
 ```bash
 # development
@@ -45,7 +61,33 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+This will make available:
+
+1. The postgres database based on the environment variables you define
+2. The pg-admin dashboard at http://localhost:5050 by default
+3. The app running at http://localhost:3000 by default
+
+### Run the app with production composer
+
+In this case, you do not need any previos/following setup:
+
+```bash
+# Normal logging display
+$ docker compose up
+
+# Or detached mode
+$ docker compose up -d
+
+```
+
+Like the previous case, this will make available:
+
+1. The postgres database based on the environment variables you define
+2. The app running at http://localhost:3000 by default
+
+There is no pg-admin for this as it is not for production
+
+### Test
 
 ```bash
 # unit tests
@@ -58,16 +100,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## OpenAPI (Swagger) Documentation
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Once the app is running, the docs are available at: {app_base_url}/api
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+Private

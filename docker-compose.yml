@@ -1,0 +1,35 @@
+services:
+  postgres_service:
+    image: postgres:15
+    restart: always
+    container_name: postgres_service
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+      POSTGRES_USER: ${POSTGRES_DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+    ports:
+      - '${POSTGRES_DB_PORT}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  products_api:
+    container_name: products_api
+    depends_on:
+      - postgres_service
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '${APP_PORT}:3000'
+    networks:
+      - app_network
+    restart: unless-stopped
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
