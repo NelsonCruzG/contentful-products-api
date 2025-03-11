@@ -62,18 +62,21 @@ export class Product {
     type: 'bool',
     default: true,
   })
+  @Index()
   isVisible: boolean;
 
   @Column({
     name: 'external_created_at',
     type: 'timestamp with time zone',
   })
+  @Index()
   externalCreatedAt: Date;
 
   @Column({
     name: 'external_updated_at',
     type: 'timestamp with time zone',
   })
+  @Index()
   externalUpdatedAt: Date;
 
   @CreateDateColumn({

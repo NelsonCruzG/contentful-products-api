@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { ConvertedProduct, ItemWrapper } from './products.types';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConvertedProduct,
+  ItemWrapper,
+  ProductsResponse,
+} from './products.types';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
+import { ProductsGetQueryDto } from './dto/products-get-query.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -52,5 +58,42 @@ export class ProductsService {
     return this.synchronizationsRepo.count({
       where: { isVisible: false, updatedAt: MoreThan(since) },
     });
+  }
+
+  async findAll(filterDto: ProductsGetQueryDto): Promise<ProductsResponse> {
+    const { limit, page: offset, ...query } = filterDto;
+
+    const result = await this.synchronizationsRepo.find({
+      take: limit,
+      skip: (offset - 1) * limit,
+      where: { ...query, isVisible: true },
+      order: { productId: 'ASC' },
+    });
+
+    const count = await this.synchronizationsRepo.count({
+      where: { ...query, isVisible: true },
+    });
+    const hasNextPage = count > offset * limit;
+
+    return {
+      items: result,
+      page: offset,
+      limit,
+      total: count,
+      hasMore: hasNextPage,
+    };
+  }
+
+  async findById(productId: number): Promise<Product> {
+    const product = await this.synchronizationsRepo.findOneBy({ productId });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
+  }
+
+  async delete(productId: number): Promise<void> {
+    await this.findById(productId);
+    await this.synchronizationsRepo.update({ productId }, { isVisible: false });
   }
 }
