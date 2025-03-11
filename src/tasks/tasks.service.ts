@@ -58,6 +58,7 @@ export class TasksService {
         }
       } catch (error) {
         this.logger.error(`Error fetching products: ${error}`);
+        throw error;
       } finally {
         continueFetching = false;
         this.logger.debug('Finished fetching products');
@@ -98,7 +99,7 @@ export class TasksService {
     let updatedRecords = 0;
     let createdRecords = 0;
     let removedRecords = 0;
-    let error = '';
+    let errorMessage = '';
     try {
       const lastSync = await this.synchronizationsService.findLast();
       const endDate = lastSync?.endDate || new Date(0);
@@ -110,10 +111,10 @@ export class TasksService {
       removedRecords = await this.productsService.removedCount(endDate);
     } catch (error) {
       this.logger.error(error);
-      error = error.message;
+      errorMessage = error.message;
     }
 
-    const status = error ? StatusEnum.ERROR : StatusEnum.SUCCESS;
+    const status = errorMessage ? StatusEnum.ERROR : StatusEnum.SUCCESS;
     const synchronization = await this.synchronizationsService.create({
       startDate,
       endDate: new Date(),
@@ -121,6 +122,7 @@ export class TasksService {
       createdRecords,
       removedRecords,
       status,
+      errorMessage: errorMessage,
     });
     this.logger.debug('Sync finished');
 
@@ -128,7 +130,7 @@ export class TasksService {
   }
 
   // Testing values: EVERY_30_SECONDS - EVERY_5_SECONDS - EVERY_HOUR
-  @Cron(CronExpression.EVERY_30_SECONDS, {
+  @Cron(CronExpression.EVERY_HOUR, {
     name: 'hourlySyncTask',
     timeZone: 'America/Los_Angeles',
   })
