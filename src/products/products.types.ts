@@ -13,15 +13,15 @@ type SystemDescription = {
   type: string;
   revision: string;
   locale: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   publishedVersion: number;
   space: { sys: SystemProperties };
   environment: { sys: SystemProperties };
   contentType: { sys: SystemProperties };
 };
 
-type ProductFields = {
+export type ProductFields = {
   sku: string;
   name: string;
   brand: string;
@@ -48,8 +48,8 @@ export type ResponseWrapper = {
 
 type ProductInternalFields = {
   externalId: string;
-  externalCreatedAt: string;
-  externalUpdatedAt: string;
+  externalCreatedAt: Date;
+  externalUpdatedAt: Date;
   isVisible: boolean;
 };
 
