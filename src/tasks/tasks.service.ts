@@ -2,10 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
-import { ProductsService } from 'src/products/products.service';
-import { ItemWrapper, ResponseWrapper } from 'src/products/products.types';
-import { StatusEnum } from 'src/synchronizations/entities/synchronization.entity';
-import { SynchronizationsService } from 'src/synchronizations/synchronizations.service';
+import { ProductsService } from '../products/products.service';
+import { ItemWrapper, ResponseWrapper } from '../products/products.types';
+import { StatusEnum } from '../synchronizations/entities/synchronization.entity';
+import { SynchronizationsService } from '../synchronizations/synchronizations.service';
 
 @Injectable()
 export class TasksService {
@@ -52,10 +52,10 @@ export class TasksService {
         this.logger.debug(`Skipped: ${skip}`);
         this.logger.debug(`Items fetched: ${response.data.items.length}`);
 
+        skip += limit;
         if (response.data.total <= skip) {
           continueFetching = false;
         }
-        skip += limit;
       } catch (error) {
         this.logger.error(`Error fetching products: ${error}`);
       } finally {
@@ -114,7 +114,7 @@ export class TasksService {
     }
 
     const status = error ? StatusEnum.ERROR : StatusEnum.SUCCESS;
-    await this.synchronizationsService.create({
+    const synchronization = await this.synchronizationsService.create({
       startDate,
       endDate: new Date(),
       updatedRecords,
@@ -123,6 +123,8 @@ export class TasksService {
       status,
     });
     this.logger.debug('Sync finished');
+
+    return synchronization;
   }
 
   // Testing values: EVERY_30_SECONDS - EVERY_5_SECONDS - EVERY_HOUR

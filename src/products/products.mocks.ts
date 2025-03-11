@@ -4,7 +4,7 @@ import { ConvertedProduct, ItemWrapper, ProductFields } from './products.types';
 const baseDateMock = new Date('2025-01-01');
 const metadataMock = { tags: [], concepts: [] };
 const sysMock: any = {
-  id: 'externalId',
+  id: 'externalId_1',
   createdAt: baseDateMock,
   updatedAt: baseDateMock,
 };
@@ -37,7 +37,7 @@ export const convertedProductMock: ConvertedProduct = {
   price: 0,
   currency: 'currency',
   stock: 0,
-  externalId: 'externalId',
+  externalId: 'externalId_1',
   externalCreatedAt: baseDateMock,
   externalUpdatedAt: baseDateMock,
   isVisible: true,
@@ -45,7 +45,7 @@ export const convertedProductMock: ConvertedProduct = {
 
 export const productMock: Product = {
   productId: 1,
-  externalId: 'externalId',
+  externalId: 'externalId_1',
   sku: 'sku',
   name: 'name',
   brand: 'brand',
