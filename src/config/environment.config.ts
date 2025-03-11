@@ -45,4 +45,10 @@ export const environmentSchema = Joi.object({
     'number.port': 'APP_PORT env var must be a valid port',
     'number.required': 'APP_PORT env var is required but not set',
   }),
+  JWT_SECRET: Joi.string().required().messages({
+    'string.required': 'JWT_SECRET env variable is required but not set',
+  }),
+  JWT_EXP_TIME: Joi.string().required().messages({
+    'string.required': 'JWT_EXP_TIME env variable is required but not set',
+  }),
 });
