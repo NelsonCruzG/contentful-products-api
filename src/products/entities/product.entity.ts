@@ -16,7 +16,7 @@ export class Product {
     name: 'external_id',
     unique: true,
   })
-  extrernalId: string;
+  externalId: string;
 
   @Column()
   @Index()

@@ -46,11 +46,11 @@ export type ResponseWrapper = {
   items: ItemWrapper[];
 };
 
-type ProductExtraFields = {
-  extrernalId: string;
+type ProductInternalFields = {
+  externalId: string;
   externalCreatedAt: string;
   externalUpdatedAt: string;
   isVisible: boolean;
 };
 
-export type ConvertedProduct = ProductFields & ProductExtraFields;
+export type ConvertedProduct = ProductFields & ProductInternalFields;
