@@ -1,3 +1,5 @@
+import { Product } from './entities/product.entity';
+
 type ContentfulMetadata = {
   tags: any[];
   concepts: any[];
@@ -54,3 +56,11 @@ type ProductInternalFields = {
 };
 
 export type ConvertedProduct = ProductFields & ProductInternalFields;
+
+export type ProductsResponse = {
+  items: Product[];
+  page: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+};

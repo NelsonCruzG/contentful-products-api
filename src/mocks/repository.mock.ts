@@ -11,6 +11,8 @@ export const createMockRepository = <T = any>(): MockRepository<T> => ({
   preload: jest.fn(),
   count: jest.fn(),
   findOne: jest.fn(),
+  find: jest.fn(),
+  update: jest.fn(),
 });
 
 export type MockHttpService = Partial<Record<keyof HttpService, jest.Mock>>;

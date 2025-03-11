@@ -197,8 +197,9 @@ describe('TasksService', () => {
 
   describe('handleCron', () => {
     it('Should call syncronizeProducts', async () => {
-      jest.spyOn(service, 'syncronizeProducts');
-      jest.spyOn(service, 'handleCron');
+      jest
+        .spyOn(service, 'syncronizeProducts')
+        .mockImplementation(() => undefined);
 
       const customError = new Error('Some http error');
       httpService.get.mockReturnValueOnce(throwError(() => customError));

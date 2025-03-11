@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { ConvertedProduct, ItemWrapper } from './products.types';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConvertedProduct,
+  ItemWrapper,
+  ProductsResponse,
+} from './products.types';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Between, Like, MoreThan, Repository } from 'typeorm';
+import { ProductsGetQueryDto } from './dto/products-get-query.dto';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
-    private synchronizationsRepo: Repository<Product>,
+    private productsRepo: Repository<Product>,
   ) {}
   convertToProduct(item: ItemWrapper): ConvertedProduct {
     return {
@@ -29,28 +34,75 @@ export class ProductsService {
   }
 
   async create(product: ConvertedProduct): Promise<Product> {
-    return this.synchronizationsRepo.save(product);
+    return this.productsRepo.save(product);
   }
 
   async createMany(products: ConvertedProduct[]): Promise<Product[]> {
-    return this.synchronizationsRepo.save(products);
+    return this.productsRepo.save(products);
   }
 
   async findByExternalId(externalId: string): Promise<Product> {
-    return this.synchronizationsRepo.findOneBy({ externalId });
+    return this.productsRepo.findOneBy({ externalId });
   }
 
   async update(productId: number, product: ConvertedProduct): Promise<Product> {
-    const updatedProduct = await this.synchronizationsRepo.preload({
+    const updatedProduct = await this.productsRepo.preload({
       productId,
       ...product,
     });
-    return this.synchronizationsRepo.save(updatedProduct);
+    return this.productsRepo.save(updatedProduct);
   }
 
   async removedCount(since?: Date): Promise<number> {
-    return this.synchronizationsRepo.count({
+    return this.productsRepo.count({
       where: { isVisible: false, updatedAt: MoreThan(since) },
     });
+  }
+
+  async findAll(filterDto: ProductsGetQueryDto): Promise<ProductsResponse> {
+    const { limit, page, ...query } = filterDto;
+    const { minPrice, maxPrice, name, ...rest } = query;
+    const filter = {
+      ...rest,
+      price: Between(minPrice, maxPrice),
+      name: Like(`%${name || ''}%`),
+      isVisible: true,
+    };
+
+    const result = await this.productsRepo.find({
+      take: limit,
+      skip: (page - 1) * limit,
+      where: filter,
+      order: { productId: 'ASC' },
+    });
+
+    const count = await this.productsRepo.count({
+      where: { ...filter, isVisible: true },
+    });
+    const hasNextPage = count > page * limit;
+
+    return {
+      items: result,
+      page: page,
+      limit,
+      total: count,
+      hasMore: hasNextPage,
+    };
+  }
+
+  async findById(productId: number): Promise<Product> {
+    const product = await this.productsRepo.findOneBy({
+      productId,
+      isVisible: true,
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
+  }
+
+  async delete(productId: number): Promise<void> {
+    await this.findById(productId);
+    await this.productsRepo.update({ productId }, { isVisible: false });
   }
 }

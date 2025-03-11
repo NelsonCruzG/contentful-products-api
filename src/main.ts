@@ -8,7 +8,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe());
+
+  const globalPipe = new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+    forbidUnknownValues: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  });
+  app.useGlobalPipes(globalPipe);
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Contentful Products API')
