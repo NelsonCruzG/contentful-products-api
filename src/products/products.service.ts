@@ -6,9 +6,8 @@ import {
 } from './products.types';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Between, Like, MoreThan, Repository } from 'typeorm';
 import { ProductsGetQueryDto } from './dto/products-get-query.dto';
-import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -61,23 +60,30 @@ export class ProductsService {
   }
 
   async findAll(filterDto: ProductsGetQueryDto): Promise<ProductsResponse> {
-    const { limit, page: offset, ...query } = filterDto;
+    const { limit, page, ...query } = filterDto;
+    const { minPrice, maxPrice, name, ...rest } = query;
+    const filter = {
+      ...rest,
+      price: Between(minPrice, maxPrice),
+      name: Like(`%${name || ''}%`),
+      isVisible: true,
+    };
 
     const result = await this.synchronizationsRepo.find({
       take: limit,
-      skip: (offset - 1) * limit,
-      where: { ...query, isVisible: true },
+      skip: (page - 1) * limit,
+      where: filter,
       order: { productId: 'ASC' },
     });
 
     const count = await this.synchronizationsRepo.count({
-      where: { ...query, isVisible: true },
+      where: { ...filter, isVisible: true },
     });
-    const hasNextPage = count > offset * limit;
+    const hasNextPage = count > page * limit;
 
     return {
       items: result,
-      page: offset,
+      page: page,
       limit,
       total: count,
       hasMore: hasNextPage,
@@ -85,7 +91,10 @@ export class ProductsService {
   }
 
   async findById(productId: number): Promise<Product> {
-    const product = await this.synchronizationsRepo.findOneBy({ productId });
+    const product = await this.synchronizationsRepo.findOneBy({
+      productId,
+      isVisible: true,
+    });
 
     if (!product) throw new NotFoundException('Product not found');
 

@@ -47,7 +47,13 @@ export class ProductsGetQueryDto extends PartialType(PaginationQueryDto) {
 
   @IsOptional()
   @IsPositive()
-  @IsNumber()
-  @ApiPropertyOptional({ description: 'The product price' })
-  readonly price: number;
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @ApiPropertyOptional({ description: 'The product min price' })
+  readonly minPrice?: number = 0.01;
+
+  @IsOptional()
+  @IsPositive()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @ApiPropertyOptional({ description: 'The product max price' })
+  readonly maxPrice?: number = 100_000_000;
 }
