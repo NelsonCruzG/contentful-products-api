@@ -75,6 +75,7 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s",
       "!**/*.module.(t|j)s",
+      "!**/*.config.(t|j)s",
       "!**/*.entity.(t|j)s",
       "!**/*main.(t|j)s",
       "!**/*ormconfig.(t|j)s",
