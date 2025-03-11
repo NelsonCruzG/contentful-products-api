@@ -13,7 +13,7 @@ import { ProductsGetQueryDto } from './dto/products-get-query.dto';
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
-    private synchronizationsRepo: Repository<Product>,
+    private productsRepo: Repository<Product>,
   ) {}
   convertToProduct(item: ItemWrapper): ConvertedProduct {
     return {
@@ -34,27 +34,27 @@ export class ProductsService {
   }
 
   async create(product: ConvertedProduct): Promise<Product> {
-    return this.synchronizationsRepo.save(product);
+    return this.productsRepo.save(product);
   }
 
   async createMany(products: ConvertedProduct[]): Promise<Product[]> {
-    return this.synchronizationsRepo.save(products);
+    return this.productsRepo.save(products);
   }
 
   async findByExternalId(externalId: string): Promise<Product> {
-    return this.synchronizationsRepo.findOneBy({ externalId });
+    return this.productsRepo.findOneBy({ externalId });
   }
 
   async update(productId: number, product: ConvertedProduct): Promise<Product> {
-    const updatedProduct = await this.synchronizationsRepo.preload({
+    const updatedProduct = await this.productsRepo.preload({
       productId,
       ...product,
     });
-    return this.synchronizationsRepo.save(updatedProduct);
+    return this.productsRepo.save(updatedProduct);
   }
 
   async removedCount(since?: Date): Promise<number> {
-    return this.synchronizationsRepo.count({
+    return this.productsRepo.count({
       where: { isVisible: false, updatedAt: MoreThan(since) },
     });
   }
@@ -69,14 +69,14 @@ export class ProductsService {
       isVisible: true,
     };
 
-    const result = await this.synchronizationsRepo.find({
+    const result = await this.productsRepo.find({
       take: limit,
       skip: (page - 1) * limit,
       where: filter,
       order: { productId: 'ASC' },
     });
 
-    const count = await this.synchronizationsRepo.count({
+    const count = await this.productsRepo.count({
       where: { ...filter, isVisible: true },
     });
     const hasNextPage = count > page * limit;
@@ -91,7 +91,7 @@ export class ProductsService {
   }
 
   async findById(productId: number): Promise<Product> {
-    const product = await this.synchronizationsRepo.findOneBy({
+    const product = await this.productsRepo.findOneBy({
       productId,
       isVisible: true,
     });
@@ -103,6 +103,6 @@ export class ProductsService {
 
   async delete(productId: number): Promise<void> {
     await this.findById(productId);
-    await this.synchronizationsRepo.update({ productId }, { isVisible: false });
+    await this.productsRepo.update({ productId }, { isVisible: false });
   }
 }

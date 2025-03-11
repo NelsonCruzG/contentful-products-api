@@ -1,5 +1,11 @@
+import { ProductsGetQueryDto } from './dto/products-get-query.dto';
 import { Product } from './entities/product.entity';
-import { ConvertedProduct, ItemWrapper, ProductFields } from './products.types';
+import {
+  ConvertedProduct,
+  ItemWrapper,
+  ProductFields,
+  ProductsResponse,
+} from './products.types';
 
 const baseDateMock = new Date('2025-01-01');
 const metadataMock = { tags: [], concepts: [] };
@@ -66,4 +72,23 @@ export const productCreateMock: ConvertedProduct = {
   ...convertedProductMock,
   externalCreatedAt: baseDateMock,
   externalUpdatedAt: baseDateMock,
+};
+
+export const productsResponseMock: ProductsResponse = {
+  items: [productMock],
+  page: 1,
+  limit: 5,
+  total: 1,
+  hasMore: false,
+};
+
+export const productQueryMock: ProductsGetQueryDto = {
+  sku: 'sku',
+  name: 'name',
+  brand: 'brand',
+  model: 'model',
+  category: 'category',
+  color: 'color',
+  page: 1,
+  limit: 5,
 };
