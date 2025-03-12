@@ -21,4 +21,7 @@ export class SynchronizationsService {
       order: { endDate: 'DESC' },
     });
   }
+  async totalCount(status?: StatusEnum | undefined): Promise<number> {
+    return this.synchronizationsRepo.count({ where: { status } });
+  }
 }

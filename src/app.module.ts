@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { JwtService } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthGuard } from './auth/guards/auth.guard';
     SynchronizationsModule,
     AuthModule,
     UsersModule,
+    ReportsModule,
   ],
   providers: [
     JwtService,
