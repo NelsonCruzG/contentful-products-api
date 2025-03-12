@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsDate,
   IsDateString,
   IsNumber,
   IsOptional,
@@ -20,12 +21,12 @@ export class ReportsGetQueryDto {
   readonly maxPrice?: number = 100_000_000;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiPropertyOptional({ description: 'The start date range' })
   readonly startDate?: Date = new Date(0);
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiPropertyOptional({ description: 'The end date range' })
   readonly endDate?: Date = new Date('9999-12-31');
 }
