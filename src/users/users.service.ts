@@ -32,10 +32,6 @@ export class UsersService {
     return user;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepo.find();
-  }
-
   async validateUsername(username: string): Promise<void> {
     const user = await this.findByUsername(username);
     if (user) {

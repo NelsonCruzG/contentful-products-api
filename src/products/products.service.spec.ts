@@ -15,20 +15,21 @@ import { NotFoundException } from '@nestjs/common';
 describe('ProductsService', () => {
   let service: ProductsService;
   let repository: MockRepository;
+  const productsRepoToken = getRepositoryToken(Product);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductsService,
         {
-          provide: getRepositoryToken(Product),
+          provide: productsRepoToken,
           useValue: createMockRepository(),
         },
       ],
     }).compile();
 
     service = module.get<ProductsService>(ProductsService);
-    repository = module.get<MockRepository>(getRepositoryToken(Product));
+    repository = module.get<MockRepository>(productsRepoToken);
   });
 
   it('should be defined', () => {

@@ -86,6 +86,7 @@
       "!**/*.module.(t|j)s",
       "!**/*.config.(t|j)s",
       "!**/*.entity.(t|j)s",
+      "!**/*.guard.(t|j)s",
       "!**/*main.(t|j)s",
       "!**/*ormconfig.(t|j)s",
       "!**/node_modules/**",
