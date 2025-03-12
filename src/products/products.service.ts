@@ -8,6 +8,7 @@ import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, MoreThan, Repository } from 'typeorm';
 import { ProductsGetQueryDto } from './dto/products-get-query.dto';
+import { ReportsGetQueryDto } from '../reports/dto/reports-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -77,7 +78,7 @@ export class ProductsService {
     });
 
     const count = await this.productsRepo.count({
-      where: { ...filter, isVisible: true },
+      where: filter,
     });
     const hasNextPage = count > page * limit;
 
@@ -104,5 +105,20 @@ export class ProductsService {
   async delete(productId: number): Promise<void> {
     await this.findById(productId);
     await this.productsRepo.update({ productId }, { isVisible: false });
+  }
+
+  async totalCount(): Promise<number> {
+    return this.productsRepo.count();
+  }
+
+  async totalDeletedCount(filterDto: ReportsGetQueryDto): Promise<number> {
+    const { minPrice, maxPrice, startDate, endDate } = filterDto;
+    const filter = {
+      price: Between(minPrice, maxPrice),
+      updatedAt: Between(startDate, endDate),
+      isVisible: false,
+    };
+
+    return this.productsRepo.count({ where: filter });
   }
 }

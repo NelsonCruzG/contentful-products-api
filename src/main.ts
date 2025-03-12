@@ -24,6 +24,11 @@ async function bootstrap() {
     .setTitle('Contentful Products API')
     .setDescription('Products from Contentful API via syncronization strategy.')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'JWT',
+    )
+    .addSecurityRequirements('JWT')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);

@@ -4,6 +4,21 @@
 
 API that syncronizes data from Contentful products for users to manage and admins to see metrics
 
+## Assumptions and choices
+
+For this project I asume you have the following:
+
+- Internet Conexion
+- Credential for Contentful API
+- VS Code editor and expertise to setup NestJs projects
+- Expertise in using HTTP client software or Swagger documentation (check next sections for details)
+
+Because of different situations (time, preferences, scope, etc.) I made the following choises:
+
+- Did not create a DB population script, so you must run the project and adjust scheduler to fetch the intial data sooner, there is a comment at `src\tasks\tasks.service.ts:132` for that
+- Because of the above, I also added a public Users enpoint to create a user that you can use to test protected endpoints.
+- For audit reasons, products are not permanently removed from DB, they are hidden when removed by users instead.
+
 ## Core
 
 Tecnologies in this project:

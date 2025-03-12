@@ -7,12 +7,14 @@ import {
 } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { ProductsGetQueryDto } from './dto/products-get-query.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Public()
   @Get()
   @ApiOkResponse({
     description:
@@ -26,6 +28,7 @@ export class ProductsController {
     return this.productsService.findAll(filterQueryDto);
   }
 
+  @Public()
   @Delete(':id')
   @ApiOkResponse({ description: 'Product removed successfully' })
   @ApiNotFoundResponse({ description: 'Product not found' })
